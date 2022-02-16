@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -75,6 +77,9 @@ func (c *client) deleteImage(ctx context.Context, image string) (err error) {
 
 	_, err = c.images.RemoveImage(ctx, request)
 	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return nil
+		}
 		return err
 	}
 
